@@ -40,6 +40,19 @@ Memory    : {memory['used_gb']} GB used of {memory['total_gb']} GB ({memory['per
 Disk      : {disk['used_gb']} GB used of {disk['total_gb']} GB ({disk['percent']}%)
 ============================
 """
+
+    # Check for warnings
+    alerts = []
+    if cpu > 80:
+        alerts.append(f"⚠️ HIGH CPU USAGE: {cpu}%")
+    if memory['percent'] > 80:
+        alerts.append(f"⚠️ HIGH MEMORY USAGE: {memory['percent']}%")
+    if disk['percent'] > 80:
+        alerts.append(f"⚠️ HIGH DISK USAGE: {disk['percent']}%")
+
+    if alerts:
+        report += "\n".join(alerts) + "\n"
+
     print(report)
 
     # Save to a log file
@@ -47,7 +60,6 @@ Disk      : {disk['used_gb']} GB used of {disk['total_gb']} GB ({disk['percent']
         f.write(report)
     print("✅ Log saved to health_log.txt")
 
-# Run it
-while True:
-    log_health_check()
-    time.sleep(10)  # Check every 10 seconds
+    while True:
+        time.sleep(10)  # Wait for 10 seconds before the next check
+        log_health_check()
